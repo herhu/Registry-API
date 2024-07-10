@@ -1,21 +1,29 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { RegistryModule } from './registry/registry.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import configuration from './configuration';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { RegistryModule } from './registry/registry.module';
 import { WinstonModule } from 'nest-winston';
+import { ThrottlerModule } from '@nestjs/throttler';
 import * as winston from 'winston';
 
 @Module({
   imports: [
-    RedisModule.forRoot({
-      readyLog: true,
-      config: {
-        host: 'localhost',
-        port: 6379,
-        password: 'bitnami'
-      }
+    ConfigModule.forRoot({
+      load: [configuration],
+      isGlobal: true,
     }),
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        config: {
+          host: configService.get<string>('redis.host'),
+          port: configService.get<number>('redis.port'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    RegistryModule,
     WinstonModule.forRoot({
       transports: [
         new winston.transports.Console({
@@ -29,8 +37,10 @@ import * as winston from 'winston';
         }),
       ],
     }),
-    RegistryModule],
-  controllers: [AppController],
-  providers: [AppService],
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10,
+    }]),
+  ],
 })
 export class AppModule {}

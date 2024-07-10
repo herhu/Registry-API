@@ -1,20 +1,8 @@
 import { Controller, Get, Post, Body, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { RegistryService } from './registry.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBody } from '@nestjs/swagger';
-import { IsString, IsArray, ArrayNotEmpty, ArrayUnique } from 'class-validator';
-
-class ItemDto {
-  @IsString()
-  item: string;
-}
-
-class ItemsDto {
-  @IsArray()
-  @ArrayNotEmpty()
-  @ArrayUnique()
-  @IsString({ each: true })
-  items: string[];
-}
+import { ItemDto } from './dto/item.dto';
+import { ItemsDto } from './dto/items.dto';
 
 @ApiTags('registry')
 @Controller('registry')
