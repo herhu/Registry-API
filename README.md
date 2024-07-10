@@ -24,6 +24,7 @@ The Registry API is a RESTful service that maintains a set of items internally. 
    PORT=3000
    REDIS_HOST=redis
    REDIS_PORT=6379
+   REDIS_PASSWORD=custom
    ```
 
 ## Installation

@@ -19,6 +19,7 @@ import * as winston from 'winston';
         config: {
           host: configService.get<string>('redis.host'),
           port: configService.get<number>('redis.port'),
+          password: configService.get<string>('redis.password'),
         },
       }),
       inject: [ConfigService],
