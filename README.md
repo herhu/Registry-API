@@ -17,17 +17,14 @@ The Registry API is a RESTful service that maintains a set of items internally. 
 - **Node.js** (>= 14.x)
 - **npm** (>= 6.x)
 - **Redis** (running on default port 6379)
+- **Docker** and **Docker Compose**
 
-## .ENV
+## .env
    ```bash
    PORT=3000
    REDIS_HOST=redis
    REDIS_PORT=6379
    ```
-
-
-
-
 
 ## Installation
 
@@ -54,6 +51,22 @@ To start the NestJS application, run:
 ```bash
 npm run start
 ```
+
+The application will be accessible at `http://localhost:3000`.
+
+## Running with Docker
+
+To build and run the application using Docker Compose, follow these steps:
+
+1. **Build the Docker images**:
+   ```bash
+   docker-compose build
+   ```
+
+2. **Start the services**:
+   ```bash
+   docker-compose up
+   ```
 
 The application will be accessible at `http://localhost:3000`.
 
@@ -152,11 +165,16 @@ Ensure Redis is running locally on the default port (`6379`) before running the 
 docker run -p 6379:6379 --name redis -d redis
 ```
 
-## Project Structure
+## CI/CD with GitHub Actions
 
-- **src/app.module.ts**: Main application module.
-- **src/main.ts**: Entry point for the application, including Swagger setup.
-- **src/registry/registry.module.ts**: Module for the registry feature.
-- **src/registry/registry.service.ts**: Service layer for registry operations.
-- **src/registry/registry.controller.ts**: Controller layer exposing the registry endpoints.
-- **test/app.e2e-spec.ts**: End-to-end test cases.
+This project uses GitHub Actions for continuous integration. The workflow is defined in `.github/workflows/ci.yml`.
+
+### Workflow Steps
+
+1. **Checkout repository**: Clones the repository.
+2. **Set up Node.js**: Sets up Node.js environment.
+3. **Install dependencies**: Installs project dependencies.
+4. **Run unit tests and coverage**: Runs unit tests with coverage report.
+5. **Run e2e tests**: Runs end-to-end tests.
+6. **Build project**: Builds the NestJS project.
+7. **Upload coverage report**: Uploads the coverage report as an artifact.
