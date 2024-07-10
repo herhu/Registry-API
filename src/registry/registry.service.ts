@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import Redis from 'ioredis';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -12,6 +12,9 @@ export class RegistryService {
   ) {}
 
   async check(item: string): Promise<string> {
+    if (!item) {
+      throw new BadRequestException('Item must be provided');
+    }
     this.logger.info(`Checking if item "${item}" is in the registry`);
     const result = (await this.redisClient.sismember('registry', item)) === 1;
     this.logger.info(`Item "${item}" is ${result ? 'in' : 'not in'} the registry`);
@@ -19,20 +22,29 @@ export class RegistryService {
   }
 
   async add(item: string): Promise<string> {
+    if (!item) {
+      throw new BadRequestException('Item must be provided');
+    }
     this.logger.info(`Adding item "${item}" to the registry`);
     await this.redisClient.sadd('registry', item);
-    this.logger.info(`Item "${item}" added to the registry`); 
-    return 'OK'
+    this.logger.info(`Item "${item}" added to the registry`);
+    return 'OK';
   }
 
   async remove(item: string): Promise<string> {
+    if (!item) {
+      throw new BadRequestException('Item must be provided');
+    }
     this.logger.info(`Removing item "${item}" from the registry`);
     await this.redisClient.srem('registry', item);
     this.logger.info(`Item "${item}" removed from the registry`);
-    return 'OK'
+    return 'OK';
   }
 
   async diff(items: string[]): Promise<string[]> {
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      throw new BadRequestException('Items must be provided as a non-empty array');
+    }
     this.logger.info(`Calculating diff with items: ${items}`);
     const currentSet = await this.redisClient.smembers('registry');
     const diffResult = items.filter(item => !currentSet.includes(item));
@@ -54,6 +66,6 @@ export class RegistryService {
     await Promise.all(currentSet.map(item => this.redisClient.sadd('inverted', item)));
 
     this.logger.info('Registry set inverted');
-    return 'OK'
+    return 'OK';
   }
 }

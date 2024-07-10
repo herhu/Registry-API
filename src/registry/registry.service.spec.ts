@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 import { RegistryService } from './registry.service';
 import { RedisModule, getRedisToken } from '@liaoliaots/nestjs-redis';
 import Redis from 'ioredis';
@@ -66,6 +67,10 @@ describe('RegistryService', () => {
       const result = await service.check('red');
       expect(result).toBe('NOT OK');
     });
+
+    it('should throw an error if item is not provided', async () => {
+      await expect(service.check('')).rejects.toThrow(BadRequestException);
+    });
   });
 
   describe('add', () => {
@@ -74,6 +79,10 @@ describe('RegistryService', () => {
       expect(result).toBe('OK');
       const checkResult = await service.check('yellow');
       expect(checkResult).toBe('OK');
+    });
+
+    it('should throw an error if item is not provided', async () => {
+      await expect(service.add('')).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -85,6 +94,10 @@ describe('RegistryService', () => {
       const checkResult = await service.check('red');
       expect(checkResult).toBe('NOT OK');
     });
+
+    it('should throw an error if item is not provided', async () => {
+      await expect(service.remove('')).rejects.toThrow(BadRequestException);
+    });
   });
 
   describe('diff', () => {
@@ -92,6 +105,11 @@ describe('RegistryService', () => {
       await service.add('blue');
       const result = await service.diff(['red', 'blue', 'green']);
       expect(result).toEqual(['red', 'green']);
+    });
+
+    it('should throw an error if items array is empty or not provided', async () => {
+      await expect(service.diff([])).rejects.toThrow(BadRequestException);
+      await expect(service.diff(null)).rejects.toThrow(BadRequestException);
     });
   });
 
