@@ -18,6 +18,17 @@ The Registry API is a RESTful service that maintains a set of items internally. 
 - **npm** (>= 6.x)
 - **Redis** (running on default port 6379)
 
+## .ENV
+   ```bash
+   PORT=3000
+   REDIS_HOST=redis
+   REDIS_PORT=6379
+   ```
+
+
+
+
+
 ## Installation
 
 1. **Clone the repository**:
